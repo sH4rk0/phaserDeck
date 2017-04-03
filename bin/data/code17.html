@@ -1,0 +1,124 @@
+/// &lt;reference path="../lib/phaser.d.ts"/&gt;
+
+module mygame {
+
+    export class game extends Phaser.State {
+
+        private bg: Phaser.TileSprite;
+        public player: Player;
+        private flapKey: any;
+        private idleTween: Phaser.Tween;
+        private isStarted: boolean;
+        private playerStart: number;
+
+        constructor() { super(); }
+
+        create() {
+
+            this.isStarted=false;
+            this.playerStart = null;
+            this.game.physics.arcade.gravity.y = 400;
+            this.game.world.setBounds(0, 0, 52000, 768);
+            this.game.camera.x = 0;
+          
+            this.bg = this.game.add.tileSprite(-100, 0, 1200, 768, 'bgGame');
+            this.bg.fixedToCamera = true;
+
+            this.player = new Player(this.game, this);
+            this.player.play("idle");
+            this.idleTween = this.game.add.tween(this.player).to({ y: this.player.y - 50 }, 1000, Phaser.Easing.Sinusoidal.InOut, true, 0, -1, true);
+
+            this.game.camera.follow(this.player);
+            this.game.camera.deadzone = new Phaser.Rectangle(0, 0, 100, 768);
+
+            this.flapKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+            this.flapKey.onDown.addOnce(this.startGame, this);
+            this.flapKey.onDown.add(this.player.flap, this.player);
+                
+            }
+
+        }
+
+        startGame() {
+
+            this.player.body.allowGravity = true;
+            this.player.alive = true;
+            this.player.flap();
+            this.player.body.velocity.x = 100;
+
+            if (this.playerStart != null) this.player.x = this.playerStart;
+
+            this.idleTween.pause();
+            this.isStarted = true;
+
+        }
+
+        render() {
+
+            this.game.debug.cameraInfo(this.game.camera, 32, 32);
+            this.game.debug.bodyInfo(this.player, 32, 132);
+
+        }
+
+        update() {
+
+            if (this.isStarted) {
+
+                this.bg.tilePosition.x -= 1.5;
+        
+            }
+
+        }
+
+    }
+}
+
+//PLAYER
+
+module core {
+
+    export class Player extends Phaser.Sprite {
+
+        game: Phaser.Game;
+        gameState: any;
+
+        constructor(game: Phaser.Game, gameState: any) {
+
+            super(game, 50, game.world.centerY, game.cache.getBitmapData('player'));
+
+            this.gameState = gameState;
+            this.game.physics.arcade.enableBody(this);
+            this.scale.set(.5);
+            this.anchor.setTo(0.5, 0.5);
+            this.alive = false;
+            this.body.allowGravity = false;
+            this.body.collideWorldBounds = true;
+            this.game.add.existing(this);
+
+        }
+
+        update() {
+
+            if (this.angle < 40 && this.alive) {
+                this.angle += 0.5;
+            }
+
+            if (!this.alive) {
+                this.body.velocity.x = 0;
+            }
+
+        }
+
+        flap() {
+
+            if (!!this.alive) {
+                
+                this.body.velocity.y = -200;
+                this.game.add.tween(this).to({ angle: -40 }, 100).start();
+
+            }
+        };
+
+    }
+
+}

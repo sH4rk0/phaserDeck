@@ -8,8 +8,10 @@ module core {
 
     export class stateFade extends Phaser.Plugin {
 
-
         private settings: any;
+         private _init: any;
+          private _create: any;
+       
         private _originalStateMethods: any;
         private _texture: Phaser.RenderTexture;
         private _cover: Phaser.Sprite;
@@ -40,6 +42,8 @@ module core {
 
             this._this = this;
 
+            this._originalStateMethods={};
+
         }
 
         configure(options: Object) {
@@ -53,13 +57,40 @@ module core {
                 }
             }
 
-
-
         }
 
         to(state: string): void {
 
             this._toState = state;
+
+/*
+    this._originalStateMethods[state] = this._originalStateMethods[state] || {
+      init: this.game.state.states[state].init,
+      create: this.game.state.states[state].create
+    };
+
+     this._init = this._originalStateMethods[state].init;
+    this._create = this._originalStateMethods[state].create;
+
+this.game.state.states[state].init = function() {
+    
+      if (this._init) {
+        this._init.apply(this, arguments);
+      }
+    };
+
+    // Extend state create method to animate cover
+    this.game.state.states[state].create = function() {
+      if (this._create) {
+        this._create.apply(this, arguments);
+      }
+     // _this.bringToTop();
+     // _this._animateCover();
+    };
+*/
+
+ 
+
             this.showTiles();
 
 
@@ -88,7 +119,7 @@ module core {
                 _sprite = this.groupFade.getAt(_sequence[_i]) as Phaser.Sprite;
                 _sprite.health = _i;
 
-                this.game.add.tween(_sprite).to({ alpha: 1 }, this.settings.duration, this.settings.ease, true, _i * 10).onComplete.add(function (sprite) {
+                this.game.add.tween(_sprite).to({ alpha: 1 }, this.settings.duration, this.settings.ease, true, _i * 10).onComplete.add((sprite) => {
                     if (sprite.health == 47) {
 
                         this.step2(this);
@@ -125,10 +156,8 @@ module core {
                 _sprite = this.groupFade.getAt(_sequence[_i]) as Phaser.Sprite;
                 _sprite.health = _i;
 
-                this.game.add.tween(_sprite).to({ alpha: 0 }, this.settings.duration, this.settings.ease, true, _i * 10).onComplete.add(function (sprite) {
-                    if (sprite.health == 47) {
-
-                    }
+                this.game.add.tween(_sprite).to({ alpha: 0 }, this.settings.duration, this.settings.ease, true, _i * 10).onComplete.add((sprite) => {
+                    if (sprite.health == 47) { }
 
                 }, this);
             }
@@ -138,25 +167,13 @@ module core {
 
 
 
-
-
-
-
-
-
-        step2(_this: stateFade) {
+        step2(_thisState: stateFade) {
 
 
             this.game.state.start(this._toState);
-
-            this.game.state.states[this._toState].init = function () {
-
+            this.game.state.states[this._toState].init = () => _thisState.hideTiles();
 
 
-                _this.hideTiles();
-
-
-            };
 
         }
 

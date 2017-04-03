@@ -1,0 +1,195 @@
+/// &lt;reference path="../lib/phaser.d.ts"/&gt;
+
+module mygame {
+
+    export let _game: Phaser.Game;
+
+     class initPresentation {
+
+        constructor(width?: number, height?: number) {
+
+            _game = new Phaser.Game(width, height, Phaser.AUTO, "", null, false, false);
+            _game.state.add("boot", boot, false);
+            _game.state.add("preloader", preloader, false);
+            _game.state.add("game", game, false);
+            _game.state.start("boot");
+
+        }
+
+     }
+    
+    window.onload = () => new initPresentation(1024, 768);
+
+}
+
+
+module game{
+    export class boot extends Phaser.State{
+
+        preload(){
+            let bmd : Phaser.BitmapData = this.game.add.bitmapData(200,50);
+			
+			bmd.ctx.fillStyle = '#0096ff';
+			bmd.ctx.beginPath();
+			bmd.ctx.rect(0, 0, 200, 50);
+			bmd.ctx.fill();
+			this.game.cache.addBitmapData('loadingBar', bmd);
+			
+			bmd = this.game.add.bitmapData(200,50);
+			bmd.ctx.fillStyle = '#0096ff';
+			bmd.ctx.beginPath();
+			bmd.ctx.rect(0, 0, 200, 50);
+			bmd.ctx.fill();
+			this.game.cache.addBitmapData('startBtn', bmd);
+
+			bmd = this.game.add.bitmapData(1024,50);
+			bmd.ctx.fillStyle = '#00ff00';
+			bmd.ctx.beginPath();
+			bmd.ctx.rect(0, 0, 1024, 20);
+			bmd.ctx.fill();
+			this.game.cache.addBitmapData('collider', bmd);
+
+			bmd = this.game.add.bitmapData(100,100);
+			bmd.ctx.fillStyle = '#ff0000';
+			bmd.ctx.beginPath();
+			bmd.ctx.rect(0, 0, 100, 100);
+			bmd.ctx.fill();
+			this.game.cache.addBitmapData('enemy', bmd);
+
+			bmd = this.game.add.bitmapData(50,50);
+			bmd.ctx.fillStyle = '#0000ff';
+			bmd.ctx.beginPath();
+			bmd.ctx.rect(0, 0, 50, 50);
+			bmd.ctx.fill();
+			this.game.cache.addBitmapData('player', bmd);
+        }
+
+     create(){
+
+            this.game.stage.backgroundColor = '#ffffff';
+		    this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+		    this.game.stage.smoothed=false;
+		    this.game.scale.pageAlignHorizontally = true;
+    	    this.game.scale.pageAlignVertically = true;
+		    this.game.state.start('preloader');
+        }
+    }
+}
+
+
+module game {
+	export class preloader extends Phaser.State {
+
+		game: Phaser.Game;
+		startBtn: Phaser.Image;
+		loadingBar: Phaser.Image;
+		loadingPerc: Phaser.Text;
+
+		preload() {
+
+			try {
+
+				this.game.load.onLoadStart.add(() => { }, this);
+				this.game.load.onFileStart.add(() => { console.log("onFileStart") }, this);
+				this.game.load.onFileError.add((filekey, file) => { console.log("onFileError") }, this);
+				this.game.load.onFileComplete.add(this.fileComplete, this);
+
+				this.game.load.onLoadComplete.add(() => {
+
+					this.loadingBar.visible = false;
+					this.loadingPerc.visible = false;
+					this.startBtn.visible = true;
+					this.game.input.onDown.addOnce(this.startGame, this);
+
+				}, this);
+
+
+				//start button
+				//--------------------------
+				this.startBtn = this.game.add.image(this.game.world.centerX, this.game.world.centerY, this.game.cache.getBitmapData('startBtn'));
+				this.startBtn.anchor.setTo(0.5);
+
+				var _spriteText = this.game.add.text(0, 0, 'START', { fill: '#ffffff' });
+
+				_spriteText.anchor.set(0.5);
+				this.startBtn.addChild(_spriteText);
+				this.startBtn.visible = false;
+
+				//Loading container
+				//--------------------------
+
+				this.loadingBar = this.game.add.image(this.game.world.centerX, this.game.world.centerY, this.game.cache.getBitmapData('loadingBar'));
+				this.loadingBar.anchor.setTo(0.5);
+				this.loadingPerc = this.game.add.text(0, 0, '0%', { wordWrap: true, wordWrapWidth: this.loadingBar.width, fill: '#ffffff', stroke: '#0096ff', strokeThickness: 5 });
+				this.loadingPerc.anchor.set(0.5);
+				this.loadingBar.addChild(this.loadingPerc);
+				this.game.load.setPreloadSprite(this.loadingBar);
+
+				//Assets Load
+				//--------------------------	
+				// IMAGES		
+				for (var i = 0; i < gameData.assets.images.length; i++) { this.game.load.image(gameData.assets.images[i].name, gameData.assets.images[i].path); }
+
+				// SPRITESHEETS		
+				for (var i = 0; i < gameData.assets.spritesheets.length; i++) {
+					this.game.load.spritesheet(gameData.assets.spritesheets[i].name, gameData.assets.spritesheets[i].path, gameData.assets.spritesheets[i].width, gameData.assets.spritesheets[i].height, gameData.assets.spritesheets[i].frames);
+				}
+				//bitmap fonts
+				for (var i = 0; i < gameData.assets.bitmapfont.length; i++) {
+					this.game.load.bitmapFont(gameData.assets.bitmapfont[i].name, gameData.assets.bitmapfont[i].imgpath, gameData.assets.bitmapfont[i].xmlpath);
+				}
+
+				// SOUNDS		
+
+				for (var i = 0; i < gameData.assets.sounds.length; i++) {
+					this.game.load.audio(gameData.assets.sounds[i].name, gameData.assets.sounds[i].paths);
+				}
+
+				//this.game.load.script('webfont', '/js/libs/webfont.js');
+
+			} catch (err) { JSON.stringify(err); }
+
+		}
+
+
+
+		fileComplete(progress, cacheKey, success, totalLoaded, totalFiles) {
+
+			try {
+				this.loadingPerc.text = progress + "%";
+
+			} catch (err) { JSON.stringify(err); }
+
+		}
+
+
+		startGame() { this.game.state.start('game'); }
+
+
+	}
+
+
+
+	 export const gameData = {
+
+        assets: {
+            spritesheets: [],
+
+            images: [
+                { name: "bg1", path: "assets/images/slide1/bg.png" }
+            ],
+
+            sounds: [],
+
+            bitmapfont: [
+                // { name: "carrier_command", imgpath: "assets/fonts/carrier_command.png", xmlpath: "assets/fonts/carrier_command.xml" }
+            ]
+
+        },
+
+        map: [],
+        levels: []
+
+    }
+
+}
