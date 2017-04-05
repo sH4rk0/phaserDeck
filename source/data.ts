@@ -205,18 +205,27 @@ module core {
 
     }
 
-
     export const gameData = {
 
         assets: {
             spritesheets: [
+                { name: "invader", path: "assets/images/slide28/invader32x32x4.png",width:32,height:32,frames:10 },
+                { name: "kaboom", path: "assets/images/slide28/explosion.png",width:128,height:128,frames:10 },
                 { name: "francesco", path: "assets/images/slide1/francesco.png",width:211,height:200,frames:27 },
                 { name: "mummy", path: "assets/images/slide2/mummy.png",width:37,height:45,frames:18 },
                 { name: "players", path: "assets/images/slide2/players.png", width: 52, height: 70, frames: 84 },
                  
                 ],
 
+
             images: [
+{ name: "bullet", path: "assets/images/slide28/bullet.png" },
+{ name: "starfield", path: "assets/images/slide28/starfield.png" },
+{ name: "ship", path: "assets/images/slide28/player.png" },
+{ name: "enemyBullet", path: "assets/images/slide28/enemy-bullet.png" },
+{ name: "bullet", path: "ssets/images/slide28/bullet.png" },
+{ name: "bullet", path: "ssets/images/slide28/bullet.png" },
+
                 { name: "bg1", path: "assets/images/slide1/bg.png" },
                 
                 { name: "bg2", path: "assets/images/slide2/bg.png" },

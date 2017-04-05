@@ -46,13 +46,15 @@ text-align: left;  -webkit-transition-property: opacity; transition-property: op
 #slidesBtn{  background-color: #f00; background-image: url(../assets/images/viewer/slides.png)}
 #prevBtn{ background-size: 30px 30px; background-color: #f60; background-image: url(../assets/images/viewer/prev.png); background-position: 5px center;       }
 #nextBtn{  background-size: 30px 30px; background-color: #f60; background-image: url(../assets/images/viewer/next.png); background-position: 15px center; }
-#codeBtn{  background-size: 30px 30px;background-color: #ed1c40; background-image: url(../assets/images/viewer/code.png)}
+#codeBtn{  background-size: 30px 30px; background-color: #ed1c40; background-image: url(../assets/images/viewer/code.png)}
+#textBtn{ background-size: 30px 30px; background-color: #ed1c40; background-image: url(../assets/images/viewer/font.png)}
+
 #fullscreenBtn{ background-size: 30px 30px; background-color: #11a229; background-image: url(../assets/images/viewer/expand.png)}
 #fullscreenBtn.active{ background-color: #0000ff;background-image: url(../assets/images/viewer/collapse.png)}
 
 .disabled {opacity:0.15; pointer-events: none}
+.hide{ display:none;}
 
-#textBtn{ width:40px; height: 40px; background-color: #ed1c40; position:fixed; top:10px; left:10px; z-index:1000;}
 
 @media screen and (min-width: 480px) and (max-width: 767px){
 

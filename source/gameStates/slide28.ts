@@ -9,8 +9,8 @@ module core {
         private bullets: Phaser.Group;
         private bulletTime: number;
         private cursors: any;
-        private leftButton:any;
-        private rightButton:any;
+        private leftButton: any;
+        private rightButton: any;
         private fireButton: any;
         private explosions: Phaser.Group;
         private starfield: Phaser.TileSprite;
@@ -34,18 +34,13 @@ module core {
 
         preload() {
 
-            this.game.load.image('bullet', 'assets/images/slide28/bullet.png');
-            this.game.load.image('enemyBullet', 'assets/images/slide28/enemy-bullet.png');
-            this.game.load.spritesheet('invader', 'assets/images/slide28/invader32x32x4.png', 32, 32);
-            this.game.load.image('ship', 'assets/images/slide28/player.png');
-             this.game.load.spritesheet('kaboom', 'assets/images/slide28/explosion.png', 128, 128);
-             this.game.load.image('starfield', 'assets/images/slide28/starfield.png');
-            
+           
+         
+
         }
 
         create() {
-
-
+             this.game.world.setBounds(0, 0, 1024, 768);
             this.bulletTime = 0;
             this.score = 0;
             this.scoreString = '';
@@ -78,7 +73,7 @@ module core {
             this.enemyBullets.setAll('checkWorldBounds', true);
 
             //  The hero!
-            this.player = this.game.add.sprite(400, 500, 'ship');
+            this.player = this.game.add.sprite(512, 700, 'ship');
             this.player.anchor.setTo(0.5, 0.5);
             this.game.physics.enable(this.player, Phaser.Physics.ARCADE);
 
@@ -136,7 +131,7 @@ module core {
             }
 
             this.aliens.x = 100;
-            this.aliens.y = 50;
+            this.aliens.y = 80;
 
             //  All this does is basically start the invaders moving. Notice we're moving the Group they belong to, rather than the invaders directly.
             let tween = this.game.add.tween(this.aliens).to({ x: 200 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
@@ -169,10 +164,10 @@ module core {
                 //  Reset the player, then check for movement keys
                 this.player.body.velocity.setTo(0, 0);
 
-                if (this.cursors.left.isDown) {
+                if (this.leftButton.isDown) {
                     this.player.body.velocity.x = -200;
                 }
-                else if (this.cursors.right.isDown) {
+                else if (this.rightButton.isDown) {
                     this.player.body.velocity.x = 200;
                 }
 
@@ -219,7 +214,7 @@ module core {
                 this.stateText.visible = true;
 
                 //the "click to restart" handler
-                this.game.input.onTap.addOnce(this.restart, this);
+                //this.game.input.onTap.addOnce(this.restart, this);
             }
 
         }
@@ -242,13 +237,13 @@ module core {
             // When the player dies
             if (this.lives.countLiving() < 1) {
                 player.kill();
-                this.enemyBullets.callAll('kill');
+                this.enemyBullets.callAll('kill', this);
 
-                this.stateText.text = " GAME OVER \n Click to restart";
+                this.stateText.text = "GAME OVER";
                 this.stateText.visible = true;
 
                 //the "click to restart" handler
-                this.game.input.onTap.addOnce(this.restart, this);
+                //this.game.input.onTap.addOnce(this.restart, this);
             }
 
         }
@@ -264,7 +259,7 @@ module core {
 
                 // put every living enemy in an array
                 this.livingEnemies.push(alien);
-            });
+            }, this);
 
 
             if (this.enemyBullet && this.livingEnemies.length > 0) {
@@ -276,7 +271,7 @@ module core {
                 // And fire the bullet from this enemy
                 this.enemyBullet.reset(shooter.body.x, shooter.body.y);
 
-                this.game.physics.arcade.moveToObject(this.enemyBullet, this.player, 200);
+                this.game.physics.arcade.moveToObject(this.enemyBullet, this.player, 1000);
                 this.firingTimer = this.game.time.now + 2000;
             }
 
@@ -311,7 +306,7 @@ module core {
             //  A new level starts
 
             //resets the life count
-            this.lives.callAll('revive');
+            this.lives.callAll('revive', this);
             //  And brings the aliens back from the dead :)
             this.aliens.removeAll();
             this.createAliens();

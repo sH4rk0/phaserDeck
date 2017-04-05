@@ -17,6 +17,8 @@ var WebFontConfig = {
 };
 var core;
 (function (core) {
+    core._textClass = ["normal", "medium", "big"];
+    core._fontSize = 0;
     function isMobile(game) {
         if (game.device.touch && (game.device.iOS || game.device.android || game.device.windowsPhone)) {
             return true;
@@ -195,19 +197,18 @@ var core;
             core._codeBtn.className = "menuBtn disabled";
             core._codeBtn.addEventListener("click", function () { return _this.toggleCode(); });
             core._presentationMenu.appendChild(core._codeBtn);
+            core._textBtn = document.createElement("div");
+            core._textBtn.id = "textBtn";
+            core._textBtn.className = "menuBtn hide";
+            core._textBtn.addEventListener("click", function () { return _this.toggleFontSize(); });
+            core._presentationMenu.appendChild(core._textBtn);
             core._fullscreenBtn = document.createElement("div");
             core._fullscreenBtn.id = "fullscreenBtn";
             core._fullscreenBtn.className = "menuBtn";
             core._fullscreenBtn.addEventListener("click", function () { return _this.toggleFullScreen(); });
             core._presentationMenu.appendChild(core._fullscreenBtn);
-            core._textBtn = document.createElement("div");
-            core._textBtn.id = "textBtn";
-            core._textBtn.className = "menuBtn";
-            core._textBtn.addEventListener("click", function () { return _this.toggleFontSize(); });
-            core._codeContainer.appendChild(core._textBtn);
             window.onkeyup = function (e) {
                 var key = e.keyCode ? e.keyCode : e.which;
-                console.log(key);
                 if (key == 39) {
                     _this.nextState();
                 }
@@ -226,13 +227,19 @@ var core;
             }
         };
         initPresentation.prototype.toggleFontSize = function () {
+            core._fontSize++;
+            if (core._fontSize == 3)
+                core._fontSize = 0;
+            core._code.className = "typescript " + core._textClass[core._fontSize] + " hljs";
         };
         initPresentation.prototype.toggleCode = function () {
             if (core._codeContainer.className === "") {
                 core._codeContainer.className = "hide";
+                core._textBtn.className = "menuBtn hide";
             }
             else {
                 core._codeContainer.className = "";
+                core._textBtn.className = "menuBtn";
             }
         };
         initPresentation.prototype.toggleFullScreen = function () {
@@ -456,11 +463,19 @@ var core;
     core.gameData = {
         assets: {
             spritesheets: [
+                { name: "invader", path: "assets/images/slide28/invader32x32x4.png", width: 32, height: 32, frames: 10 },
+                { name: "kaboom", path: "assets/images/slide28/explosion.png", width: 128, height: 128, frames: 10 },
                 { name: "francesco", path: "assets/images/slide1/francesco.png", width: 211, height: 200, frames: 27 },
                 { name: "mummy", path: "assets/images/slide2/mummy.png", width: 37, height: 45, frames: 18 },
                 { name: "players", path: "assets/images/slide2/players.png", width: 52, height: 70, frames: 84 },
             ],
             images: [
+                { name: "bullet", path: "assets/images/slide28/bullet.png" },
+                { name: "starfield", path: "assets/images/slide28/starfield.png" },
+                { name: "ship", path: "assets/images/slide28/player.png" },
+                { name: "enemyBullet", path: "assets/images/slide28/enemy-bullet.png" },
+                { name: "bullet", path: "ssets/images/slide28/bullet.png" },
+                { name: "bullet", path: "ssets/images/slide28/bullet.png" },
                 { name: "bg1", path: "assets/images/slide1/bg.png" },
                 { name: "bg2", path: "assets/images/slide2/bg.png" },
                 { name: "bg3", path: "assets/images/slide3/bg.png" },
@@ -1382,14 +1397,9 @@ var core;
         }
         slide28.prototype.init = function () { };
         slide28.prototype.preload = function () {
-            this.game.load.image('bullet', 'assets/images/slide28/bullet.png');
-            this.game.load.image('enemyBullet', 'assets/images/slide28/enemy-bullet.png');
-            this.game.load.spritesheet('invader', 'assets/images/slide28/invader32x32x4.png', 32, 32);
-            this.game.load.image('ship', 'assets/images/slide28/player.png');
-            this.game.load.spritesheet('kaboom', 'assets/images/slide28/explosion.png', 128, 128);
-            this.game.load.image('starfield', 'assets/images/slide28/starfield.png');
         };
         slide28.prototype.create = function () {
+            this.game.world.setBounds(0, 0, 1024, 768);
             this.bulletTime = 0;
             this.score = 0;
             this.scoreString = '';
@@ -1417,7 +1427,7 @@ var core;
             this.enemyBullets.setAll('outOfBoundsKill', true);
             this.enemyBullets.setAll('checkWorldBounds', true);
             //  The hero!
-            this.player = this.game.add.sprite(400, 500, 'ship');
+            this.player = this.game.add.sprite(512, 700, 'ship');
             this.player.anchor.setTo(0.5, 0.5);
             this.game.physics.enable(this.player, Phaser.Physics.ARCADE);
             //  The baddies!
@@ -1462,7 +1472,7 @@ var core;
                 }
             }
             this.aliens.x = 100;
-            this.aliens.y = 50;
+            this.aliens.y = 80;
             //  All this does is basically start the invaders moving. Notice we're moving the Group they belong to, rather than the invaders directly.
             var tween = this.game.add.tween(this.aliens).to({ x: 200 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
             //  When the tween loops it calls descend
@@ -1482,10 +1492,10 @@ var core;
             if (this.player.alive) {
                 //  Reset the player, then check for movement keys
                 this.player.body.velocity.setTo(0, 0);
-                if (this.cursors.left.isDown) {
+                if (this.leftButton.isDown) {
                     this.player.body.velocity.x = -200;
                 }
-                else if (this.cursors.right.isDown) {
+                else if (this.rightButton.isDown) {
                     this.player.body.velocity.x = 200;
                 }
                 //  Firing?
@@ -1518,7 +1528,7 @@ var core;
                 this.stateText.text = " You Won, \n Click to restart";
                 this.stateText.visible = true;
                 //the "click to restart" handler
-                this.game.input.onTap.addOnce(this.restart, this);
+                //this.game.input.onTap.addOnce(this.restart, this);
             }
         };
         slide28.prototype.enemyHitsPlayer = function (player, bullet) {
@@ -1534,11 +1544,11 @@ var core;
             // When the player dies
             if (this.lives.countLiving() < 1) {
                 player.kill();
-                this.enemyBullets.callAll('kill');
-                this.stateText.text = " GAME OVER \n Click to restart";
+                this.enemyBullets.callAll('kill', this);
+                this.stateText.text = "GAME OVER";
                 this.stateText.visible = true;
                 //the "click to restart" handler
-                this.game.input.onTap.addOnce(this.restart, this);
+                //this.game.input.onTap.addOnce(this.restart, this);
             }
         };
         slide28.prototype.enemyFires = function () {
@@ -1549,14 +1559,14 @@ var core;
             this.aliens.forEachAlive(function (alien) {
                 // put every living enemy in an array
                 _this.livingEnemies.push(alien);
-            });
+            }, this);
             if (this.enemyBullet && this.livingEnemies.length > 0) {
                 var random = this.game.rnd.integerInRange(0, this.livingEnemies.length - 1);
                 // randomly select one of them
                 var shooter = this.livingEnemies[random];
                 // And fire the bullet from this enemy
                 this.enemyBullet.reset(shooter.body.x, shooter.body.y);
-                this.game.physics.arcade.moveToObject(this.enemyBullet, this.player, 200);
+                this.game.physics.arcade.moveToObject(this.enemyBullet, this.player, 1000);
                 this.firingTimer = this.game.time.now + 2000;
             }
         };
@@ -1580,7 +1590,7 @@ var core;
         slide28.prototype.restart = function () {
             //  A new level starts
             //resets the life count
-            this.lives.callAll('revive');
+            this.lives.callAll('revive', this);
             //  And brings the aliens back from the dead :)
             this.aliens.removeAll();
             this.createAliens();
@@ -1787,7 +1797,9 @@ var core;
                     _this.loadingBar.visible = false;
                     _this.loadingPerc.visible = false;
                     _this.startBtn.visible = true;
-                    _this.game.input.onDown.addOnce(_this.startGame, _this);
+                    _this.startBtn.inputEnabled = true;
+                    _this.startBtn.events.onInputDown.add(function () { _this.startGame(); }, _this);
+                    //this.game.input.onTap.addOnce(this.startGame, this);
                 }, this);
                 //start button
                 //--------------------------
@@ -1834,6 +1846,7 @@ var core;
             catch (err) { }
         };
         preloader.prototype.startGame = function () {
+            console.log("preload start");
             core.goState(core.presentationData.slides[0].state, core.fadeType.RANDOM, this.game);
         };
         return preloader;

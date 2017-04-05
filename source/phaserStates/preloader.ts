@@ -23,7 +23,10 @@ module core {
 					this.loadingBar.visible = false;
 					this.loadingPerc.visible = false;
 					this.startBtn.visible = true;
-					this.game.input.onDown.addOnce(this.startGame, this);
+					this.startBtn.inputEnabled = true;
+					this.startBtn.events.onInputDown.add(() => { this.startGame(); }, this);
+
+					//this.game.input.onTap.addOnce(this.startGame, this);
 
 				}, this);
 
@@ -71,7 +74,7 @@ module core {
 
 				//this.game.load.script('webfont', '/js/libs/webfont.js');
 
-			} catch (err) {  }
+			} catch (err) { }
 
 		}
 
@@ -80,16 +83,16 @@ module core {
 			try {
 				this.loadingPerc.text = progress + "%";
 
-			} catch (err) {  }
+			} catch (err) { }
 
 		}
 
 
 		startGame() {
 
-
+			console.log("preload start")
 			goState(presentationData.slides[0].state, fadeType.RANDOM, this.game);
-		
+
 
 		}
 

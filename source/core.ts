@@ -10,6 +10,10 @@ var WebFontConfig = {
 
 module core {
 
+   
+    
+    export let _textClass: Array<string> = ["normal","medium","big"];
+
     //export let _newPresentation: initPresentation;
     export let _slidesContainer: HTMLElement;
     export let _slides: HTMLElement;
@@ -23,6 +27,7 @@ module core {
     export let _prevBtn: HTMLElement;
     export let _codeBtn: HTMLElement;
     export let _textBtn: HTMLElement;
+    export let _fontSize: number = 0;
     
     export let _fullscreenBtn: HTMLElement;
     export let st:core.stateFade;
@@ -108,7 +113,7 @@ module core {
             let _obj:{title:string,state:string,preview:string,code:string}=presentationData.slides[_currentIndex];
             _code.innerHTML="";
 
-            if(_obj.code!="") {loadCode(_obj.code); _codeBtn.className="menuBtn";}else{ _codeBtn.className="menuBtn disabled"; }
+            if(_obj.code!="") {loadCode(_obj.code); _codeBtn.className="menuBtn"; }else{ _codeBtn.className="menuBtn disabled"; }
 
 
             if ((_currentIndex + 1) >= presentationData.slides.length) { _nextBtn.className="menuBtn disabled";}else{_nextBtn.className="menuBtn";}
@@ -230,22 +235,24 @@ module core {
             _codeBtn.addEventListener("click", () => this.toggleCode());
             _presentationMenu.appendChild(_codeBtn);
 
+            _textBtn = document.createElement("div");
+            _textBtn.id = "textBtn";
+            _textBtn.className = "menuBtn hide";
+            _textBtn.addEventListener("click", () => this.toggleFontSize());
+            _presentationMenu.appendChild(_textBtn);
+
+
             _fullscreenBtn = document.createElement("div");
             _fullscreenBtn.id = "fullscreenBtn";
             _fullscreenBtn.className = "menuBtn";
             _fullscreenBtn.addEventListener("click", () => this.toggleFullScreen());
             _presentationMenu.appendChild(_fullscreenBtn);
 
-            _textBtn = document.createElement("div");
-            _textBtn.id = "textBtn";
-            _textBtn.className = "menuBtn";
-            _textBtn.addEventListener("click", () => this.toggleFontSize());
-            _codeContainer.appendChild(_textBtn);
+            
 
             window.onkeyup = (e) => {
                 let key = e.keyCode ? e.keyCode : e.which;
 
-                console.log(key);
                 if (key == 39) {
                     this.nextState();
                 }else if (key == 37) {
@@ -264,16 +271,22 @@ module core {
 
          toggleFontSize(): void {
           
+            _fontSize++;
+            if (_fontSize==3) _fontSize=0;
+
+            _code.className="typescript "+ _textClass[_fontSize]+ " hljs"; 
 
 
         }
 
         toggleCode(): void {
-            if (_codeContainer.className === "") { _codeContainer.className = "hide" } else {
+            if (_codeContainer.className === "") { 
+                _codeContainer.className = "hide";
+                _textBtn.className="menuBtn hide";
+        } else {
 
-              
-
-                _codeContainer.className = ""
+                _codeContainer.className = "";
+                _textBtn.className="menuBtn";
             }
 
         }
