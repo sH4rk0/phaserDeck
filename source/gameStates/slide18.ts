@@ -14,6 +14,7 @@ module core {
         private colliderGroup: Phaser.Group;
         public playerGroup: Phaser.Group;
         private isStarted:boolean;
+        private startText:Phaser.Text;
         private playerStart: number;
 
 
@@ -43,6 +44,8 @@ module core {
             this.player = new Player(this.game, this);
             this.player.play("idle");
             this.idleTween = this.game.add.tween(this.player).to({ y: this.player.y - 50 }, 1000, Phaser.Easing.Sinusoidal.InOut, true, 0, -1, true);
+
+            this.startText=this.game.add.text(400, this.game.world.centerY, "space to start",{ font: '34px Arial', fill: '#fff' });
 
             this.game.camera.follow(this.player);
             this.game.camera.deadzone = new Phaser.Rectangle(0, 0, 100, 768);
@@ -97,6 +100,7 @@ module core {
 
             this.idleTween.pause();
             this.isStarted = true;
+            this.startText.visible=false;
 
 
         }

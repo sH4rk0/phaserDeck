@@ -920,6 +920,7 @@ var core;
             this.game.camera.x = 0;
             this.bg = this.game.add.tileSprite(-100, 0, 1200, 768, 'bgGame');
             this.bg.fixedToCamera = true;
+            this.startText = this.game.add.text(400, this.game.world.centerY, "space to start", { font: '34px Arial', fill: '#fff' });
             if (core.isMobile(this.game)) {
                 this.game.input.onDown.addOnce(this.startGame, this);
             }
@@ -931,6 +932,7 @@ var core;
         };
         slide16.prototype.startGame = function () {
             this.isStarted = true;
+            this.startText.visible = false;
         };
         slide16.prototype.render = function () {
             this.game.debug.cameraInfo(this.game.camera, 32, 32);
@@ -963,6 +965,7 @@ var core;
             this.player = new core.Player(this.game, this);
             this.player.play("idle");
             this.idleTween = this.game.add.tween(this.player).to({ y: this.player.y - 50 }, 1000, Phaser.Easing.Sinusoidal.InOut, true, 0, -1, true);
+            this.startText = this.game.add.text(400, this.game.world.centerY, "space to start", { font: '34px Arial', fill: '#fff' });
             this.game.camera.follow(this.player);
             this.game.camera.deadzone = new Phaser.Rectangle(0, 0, 100, 768);
             if (core.isMobile(this.game)) {
@@ -985,6 +988,7 @@ var core;
                 this.player.x = this.playerStart;
             this.idleTween.pause();
             this.isStarted = true;
+            this.startText.visible = false;
         };
         slide17.prototype.render = function () {
             this.game.debug.cameraInfo(this.game.camera, 32, 32);
@@ -1021,6 +1025,7 @@ var core;
             this.player = new core.Player(this.game, this);
             this.player.play("idle");
             this.idleTween = this.game.add.tween(this.player).to({ y: this.player.y - 50 }, 1000, Phaser.Easing.Sinusoidal.InOut, true, 0, -1, true);
+            this.startText = this.game.add.text(400, this.game.world.centerY, "space to start", { font: '34px Arial', fill: '#fff' });
             this.game.camera.follow(this.player);
             this.game.camera.deadzone = new Phaser.Rectangle(0, 0, 100, 768);
             if (core.isMobile(this.game)) {
@@ -1060,6 +1065,7 @@ var core;
                 this.player.x = this.playerStart;
             this.idleTween.pause();
             this.isStarted = true;
+            this.startText.visible = false;
         };
         slide18.prototype.render = function () {
             this.game.debug.cameraInfo(this.game.camera, 32, 32);
@@ -1100,6 +1106,7 @@ var core;
             this.bg = this.game.add.tileSprite(-100, 0, 1200, 768, 'bgGame');
             this.bg.fixedToCamera = true;
             this.backgroundGroup.add(this.bg);
+            this.startText = this.game.add.text(400, this.game.world.centerY, "space to start", { font: '34px Arial', fill: '#fff' });
             this.player = new core.Player(this.game, this);
             this.player.play("idle");
             this.idleTween = this.game.add.tween(this.player).to({ y: this.player.y - 50 }, 1000, Phaser.Easing.Sinusoidal.InOut, true, 0, -1, true);
@@ -1142,6 +1149,7 @@ var core;
                 this.player.x = this.playerStart;
             this.idleTween.pause();
             this.isStarted = true;
+            this.startText.visible = false;
         };
         slide19.prototype.render = function () {
             this.game.debug.cameraInfo(this.game.camera, 32, 32);

@@ -55,7 +55,7 @@ text-align: left;  -webkit-transition-property: opacity; transition-property: op
 .disabled {opacity:0.15; pointer-events: none}
 .hide{ display:none;}
 
-#myTimer{ position: absolute; top:20px; right:20px; z-index:20000; font-family: 'Press Start 2P', cursive;}
+#myTimer{ position: absolute; top:20px; right:20px; z-index:20000; font-size: 1.5em; font-family: 'Press Start 2P', cursive;}
 
 
 @media screen and (min-width: 480px) and (max-width: 767px){

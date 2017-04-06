@@ -6,6 +6,7 @@ module core {
 
         private bg: Phaser.TileSprite;
         private isStarted:boolean;
+        private startText:Phaser.Text;
         private flapKey: any;
 
         constructor() {
@@ -25,6 +26,8 @@ module core {
             this.bg = this.game.add.tileSprite(-100, 0, 1200, 768, 'bgGame');
             this.bg.fixedToCamera = true;
 
+            this.startText=this.game.add.text(400, this.game.world.centerY, "space to start",{ font: '34px Arial', fill: '#fff' });
+
             if (isMobile(this.game)) {
                 this.game.input.onDown.addOnce(this.startGame, this);
                
@@ -41,6 +44,7 @@ module core {
         startGame() {
 
             this.isStarted = true;
+             this.startText.visible=false;
 
         }
 

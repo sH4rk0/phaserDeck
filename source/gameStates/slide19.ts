@@ -20,7 +20,7 @@ module core {
 
         private randomEnemySpawnTime: number;
         private bombSpawn: number;
-
+        private startText:Phaser.Text;
         private isStarted:boolean;
         private playerStart: number;
 
@@ -52,6 +52,8 @@ module core {
             this.bg = this.game.add.tileSprite(-100, 0, 1200, 768, 'bgGame');
             this.bg.fixedToCamera = true;
             this.backgroundGroup.add(this.bg);
+
+              this.startText=this.game.add.text(400, this.game.world.centerY, "space to start",{ font: '34px Arial', fill: '#fff' });
 
 
             this.player = new Player(this.game, this);
@@ -111,6 +113,7 @@ module core {
 
             this.idleTween.pause();
             this.isStarted = true;
+             this.startText.visible=false;
 
 
         }

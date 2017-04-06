@@ -6,6 +6,7 @@ module mygame {
 
         private bg: Phaser.TileSprite;
         private isStarted:boolean;
+        private startText:Phaser.Text;
         private flapKey: any;
 
         constructor() { super(); }
@@ -21,6 +22,8 @@ module mygame {
 
             this.flapKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             this.flapKey.onDown.addOnce(this.startGame, this);
+
+            this.startText=this.game.add.text(400, this.game.world.centerY, "space to start",{ font: '34px Arial', fill: '#fff' });
            
             }
 
@@ -29,6 +32,7 @@ module mygame {
         startGame() {
 
             this.isStarted = true;
+            this.startText.visible=false;
 
         }
 

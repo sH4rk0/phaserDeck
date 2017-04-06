@@ -20,7 +20,7 @@ module mygame {
 
         private randomEnemySpawnTime: number;
         private bombSpawn: number;
-
+        private startText:Phaser.Text;
         private isStarted: boolean;
         private playerStart: number;
 
@@ -50,6 +50,8 @@ module mygame {
             this.player = new Player(this.game, this);
             this.player.play("idle");
             this.idleTween = this.game.add.tween(this.player).to({ y: this.player.y - 50 }, 1000, Phaser.Easing.Sinusoidal.InOut, true, 0, -1, true);
+
+            this.startText=this.game.add.text(400, this.game.world.centerY, "space to start",{ font: '34px Arial', fill: '#fff' });
 
             this.game.camera.follow(this.player);
             this.game.camera.deadzone = new Phaser.Rectangle(0, 0, 100, 768);
@@ -91,6 +93,7 @@ module mygame {
 
             this.idleTween.pause();
             this.isStarted = true;
+             this.startText.visible=false;
 
         }
 

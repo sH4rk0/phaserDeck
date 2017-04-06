@@ -74,7 +74,7 @@ module core {
             return (n <= 9 ? "0" + n : n);
         }
 
-        function updateTimer() {
+        function updateTimer():void {
             msLeft = endTime - (+new Date);
             if (msLeft < 1000) {
                 element.innerHTML = "countdown's over!";
