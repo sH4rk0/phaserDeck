@@ -18,6 +18,7 @@ module core {
 
             this.isStarted=false;
             this.game.physics.arcade.gravity.y = 400;
+            
             this.game.world.setBounds(0, 0, 10000, 768);
             this.game.camera.x = 0;
 

@@ -10,9 +10,9 @@ var WebFontConfig = {
 
 module core {
 
-   
-    
-    export let _textClass: Array<string> = ["normal","medium","big"];
+
+
+    export let _textClass: Array<string> = ["normal", "medium", "big"];
 
     //export let _newPresentation: initPresentation;
     export let _slidesContainer: HTMLElement;
@@ -21,6 +21,7 @@ module core {
     export let _code: HTMLElement;
     export let _presentationMenu: HTMLElement;
     export let _game: Phaser.Game;
+    export let _timer: HTMLElement;
     export let _currentIndex: number;
     export let _slidesBtn: HTMLElement;
     export let _nextBtn: HTMLElement;
@@ -28,9 +29,9 @@ module core {
     export let _codeBtn: HTMLElement;
     export let _textBtn: HTMLElement;
     export let _fontSize: number = 0;
-    
+
     export let _fullscreenBtn: HTMLElement;
-    export let st:core.stateFade;
+    export let st: core.stateFade;
 
     export function isMobile(game: Phaser.Game): boolean {
 
@@ -42,21 +43,55 @@ module core {
         }
     }
 
-    export function loadCode (_file:string){
-		
-  		 var xhr = new XMLHttpRequest();
-  		 xhr.onreadystatechange = (e) => {
-		 if(xhr.readyState == 4) {  _code.innerHTML = xhr.responseText;
-         
-          hljs.highlightBlock(_code);
-     }
-     										};
-		 let _path:string="data/"+_file+".html";
-		 xhr.open("GET",_path, true);
-		 xhr.setRequestHeader('Content-type', 'text/html');
-		 xhr.send();
-		
-		}
+    export function loadCode(_file: string) {
+
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = (e) => {
+            if (xhr.readyState == 4) {
+            _code.innerHTML = xhr.responseText;
+
+                hljs.highlightBlock(_code);
+            }
+        };
+        let _path: string = "data/" + _file + ".html";
+        xhr.open("GET", _path, true);
+        xhr.setRequestHeader('Content-type', 'text/html');
+        xhr.send();
+
+    }
+
+    export function startTimer(): void {
+
+        countdown('myTimer',25,0);
+
+    }
+
+
+    export function countdown(elementName: string, minutes: number, seconds: number) {
+        var element, endTime, hours, mins, msLeft, time;
+
+        function twoDigits(n) {
+            return (n <= 9 ? "0" + n : n);
+        }
+
+        function updateTimer() {
+            msLeft = endTime - (+new Date);
+            if (msLeft < 1000) {
+                element.innerHTML = "countdown's over!";
+            } else {
+                time = new Date(msLeft);
+                hours = time.getUTCHours();
+                mins = time.getUTCMinutes();
+                element.innerHTML = (hours ? hours + ':' + twoDigits(mins) : mins) + ':' + twoDigits(time.getUTCSeconds());
+                setTimeout(updateTimer, time.getUTCMilliseconds() + 500);
+            }
+        }
+
+        element = document.getElementById(elementName);
+        endTime = (+new Date) + 1000 * (60 * minutes + seconds) + 500;
+        updateTimer();
+    }
+
 
     export function setCurrentIndex(_state: string): void {
 
@@ -78,8 +113,8 @@ module core {
 
     export function goState(_state: string, _type: fadeType, _game: Phaser.Game): void {
 
-         setUpSlide(_state);
-         _game.state.start(_state);
+        setUpSlide(_state);
+        _game.state.start(_state);
 
         /*
         let st = <stateFade>_game.plugins.add(stateFade);
@@ -107,21 +142,21 @@ module core {
 */
     }
 
-    export function setUpSlide(_state:string){
-
-       
-            let _obj:{title:string,state:string,preview:string,code:string}=presentationData.slides[_currentIndex];
-            _code.innerHTML="";
-
-            if(_obj.code!="") {loadCode(_obj.code); _codeBtn.className="menuBtn"; }else{ _codeBtn.className="menuBtn disabled"; }
+    export function setUpSlide(_state: string) {
 
 
-            if ((_currentIndex + 1) >= presentationData.slides.length) { _nextBtn.className="menuBtn disabled";}else{_nextBtn.className="menuBtn";}
+        let _obj: { title: string, state: string, preview: string, code: string } = presentationData.slides[_currentIndex];
+        _code.innerHTML = "";
 
-            if ((_currentIndex - 1) == -1) { _prevBtn.className="menuBtn disabled";}else{ _prevBtn.className="menuBtn";}
+        if (_obj.code != "") { loadCode(_obj.code); _codeBtn.className = "menuBtn"; } else { _codeBtn.className = "menuBtn disabled"; }
 
 
-            
+        if ((_currentIndex + 1) >= presentationData.slides.length) { _nextBtn.className = "menuBtn disabled"; } else { _nextBtn.className = "menuBtn"; }
+
+        if ((_currentIndex - 1) == -1) { _prevBtn.className = "menuBtn disabled"; } else { _prevBtn.className = "menuBtn"; }
+
+
+
 
     }
 
@@ -187,7 +222,7 @@ module core {
             _slides = document.getElementById("slides");
             _code = document.getElementById("code");
 
-            
+
 
             let mString: string;
             let mElement: HTMLElement;
@@ -202,7 +237,7 @@ module core {
                     _slidesContainer.className = "hide";
                     setCurrentIndex(element.state);
                     goState(element.state, fadeType.RANDOM, _game);
-                   
+
                 }
 
                 );
@@ -248,17 +283,23 @@ module core {
             _fullscreenBtn.addEventListener("click", () => this.toggleFullScreen());
             _presentationMenu.appendChild(_fullscreenBtn);
 
-            
+
+            _timer = document.createElement("div");
+            _timer.id = "myTimer";
+            _presentationMenu.appendChild(_fullscreenBtn);
+
+
+
 
             window.onkeyup = (e) => {
                 let key = e.keyCode ? e.keyCode : e.which;
 
                 if (key == 39) {
                     this.nextState();
-                }else if (key == 37) {
+                } else if (key == 37) {
                     this.prevState();
                 }
-}
+            }
 
             setResize();
 
@@ -269,33 +310,35 @@ module core {
 
         }
 
-         toggleFontSize(): void {
-          
-            _fontSize++;
-            if (_fontSize==3) _fontSize=0;
+        toggleFontSize(): void {
 
-            _code.className="typescript "+ _textClass[_fontSize]+ " hljs"; 
+            _fontSize++;
+            if (_fontSize == 3) _fontSize = 0;
+
+            _code.className = "typescript " + _textClass[_fontSize] + " hljs";
 
 
         }
 
         toggleCode(): void {
-            if (_codeContainer.className === "") { 
+            if (_codeContainer.className === "") {
                 _codeContainer.className = "hide";
-                _textBtn.className="menuBtn hide";
-        } else {
+                _textBtn.className = "menuBtn hide";
+            } else {
 
                 _codeContainer.className = "";
-                _textBtn.className="menuBtn";
+                _textBtn.className = "menuBtn";
             }
 
         }
+
+
 
         toggleFullScreen() {
             if ((document.fullScreenElement && document.fullScreenElement !== null) ||
                 (!document.mozFullScreen && !document.webkitIsFullScreen)) {
 
-                    _fullscreenBtn.className="menuBtn active";
+                _fullscreenBtn.className = "menuBtn active";
 
                 if (document.documentElement.requestFullScreen) {
                     document.documentElement.requestFullScreen();
@@ -306,7 +349,7 @@ module core {
                 }
             } else {
 
-                 _fullscreenBtn.className="menuBtn";
+                _fullscreenBtn.className = "menuBtn";
                 if (document.cancelFullScreen) {
                     document.cancelFullScreen();
                 } else if (document.mozCancelFullScreen) {
@@ -320,27 +363,27 @@ module core {
         prevState(): void {
 
             _currentIndex--;
-            if(_currentIndex<0) _currentIndex=0;
+            if (_currentIndex < 0) _currentIndex = 0;
             goState(presentationData.slides[_currentIndex].state, fadeType.RANDOM, _game);
-           
-            
+
+
         }
 
         nextState(): void {
 
-            
+
             _currentIndex++;
-            if(_currentIndex>=presentationData.slides.length) _currentIndex=presentationData.slides.length-1;
+            if (_currentIndex >= presentationData.slides.length) _currentIndex = presentationData.slides.length - 1;
             goState(presentationData.slides[_currentIndex].state, fadeType.RANDOM, _game);
-            
-            
+
+
         }
 
 
 
     }
 
-    
+
     window.onload = () => new initPresentation(1024, 768);
-    window.onresize = () => setResize();    
+    window.onresize = () => setResize();
 }

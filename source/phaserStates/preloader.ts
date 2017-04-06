@@ -91,6 +91,7 @@ module core {
 		startGame() {
 
 			console.log("preload start")
+			startTimer();
 			goState(presentationData.slides[0].state, fadeType.RANDOM, this.game);
 
 

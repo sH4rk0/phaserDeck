@@ -42,6 +42,33 @@ var core;
         xhr.send();
     }
     core.loadCode = loadCode;
+    function startTimer() {
+        countdown('myTimer', 25, 0);
+    }
+    core.startTimer = startTimer;
+    function countdown(elementName, minutes, seconds) {
+        var element, endTime, hours, mins, msLeft, time;
+        function twoDigits(n) {
+            return (n <= 9 ? "0" + n : n);
+        }
+        function updateTimer() {
+            msLeft = endTime - (+new Date);
+            if (msLeft < 1000) {
+                element.innerHTML = "countdown's over!";
+            }
+            else {
+                time = new Date(msLeft);
+                hours = time.getUTCHours();
+                mins = time.getUTCMinutes();
+                element.innerHTML = (hours ? hours + ':' + twoDigits(mins) : mins) + ':' + twoDigits(time.getUTCSeconds());
+                setTimeout(updateTimer, time.getUTCMilliseconds() + 500);
+            }
+        }
+        element = document.getElementById(elementName);
+        endTime = (+new Date) + 1000 * (60 * minutes + seconds) + 500;
+        updateTimer();
+    }
+    core.countdown = countdown;
     function setCurrentIndex(_state) {
         var _index = 0;
         core.presentationData.slides.forEach(function (element) {
@@ -206,6 +233,9 @@ var core;
             core._fullscreenBtn.id = "fullscreenBtn";
             core._fullscreenBtn.className = "menuBtn";
             core._fullscreenBtn.addEventListener("click", function () { return _this.toggleFullScreen(); });
+            core._presentationMenu.appendChild(core._fullscreenBtn);
+            core._timer = document.createElement("div");
+            core._timer.id = "myTimer";
             core._presentationMenu.appendChild(core._fullscreenBtn);
             window.onkeyup = function (e) {
                 var key = e.keyCode ? e.keyCode : e.which;
@@ -1847,6 +1877,7 @@ var core;
         };
         preloader.prototype.startGame = function () {
             console.log("preload start");
+            core.startTimer();
             core.goState(core.presentationData.slides[0].state, core.fadeType.RANDOM, this.game);
         };
         return preloader;
